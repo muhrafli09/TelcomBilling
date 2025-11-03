@@ -5,38 +5,44 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Handle email check before Laravel routing
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/\/api\/check-email\/(.+)/', $_SERVER['REQUEST_URI'], $matches)) {
-    require_once __DIR__.'/../vendor/autoload.php';
-    $app = require_once __DIR__.'/../bootstrap/app.php';
-    
-    $email = urldecode($matches[1]);
-    
-    try {
-        $pdo = new PDO('mysql:host=127.0.0.1;dbname=telecom_billing', 'telecom', 'telecom123');
-        $stmt = $pdo->prepare('SELECT name FROM users WHERE email = ?');
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        header('Content-Type: application/json');
-        header('Access-Control-Allow-Origin: http://localhost:3000');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
-        
-        echo json_encode([
-            'exists' => $user ? true : false,
-            'name' => $user ? $user['name'] : null
-        ]);
-        exit;
-    } catch (Exception $e) {
-        header('Content-Type: application/json');
-        header('HTTP/1.1 500 Internal Server Error');
-        echo json_encode(['error' => 'Database error']);
-        exit;
-    }
+/*
+|--------------------------------------------------------------------------
+| Check If The Application Is Under Maintenance
+|--------------------------------------------------------------------------
+|
+| If the application is in maintenance / demo mode via the "down" command
+| we will load this file so that any pre-rendered content can be shown
+| instead of starting the framework, which could cause an exception.
+|
+*/
+
+if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+    require $maintenance;
 }
 
-require_once __DIR__.'/../vendor/autoload.php';
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| this application. We just need to utilize it! We'll simply require it
+| into the script here so we don't need to manually load our classes.
+|
+*/
+
+require __DIR__.'/../vendor/autoload.php';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+| Once we have the application, we can handle the incoming request using
+| the application's HTTP kernel. Then, we will send the response back
+| to this client's browser, allowing them to enjoy our application.
+|
+*/
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
 

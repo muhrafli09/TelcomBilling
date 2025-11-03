@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,7 +14,26 @@ export default function LoginPage() {
   const [isValidEmail, setIsValidEmail] = useState(false)
   const [step, setStep] = useState<'choice' | 'login' | 'register'>('choice')
   const [userName, setUserName] = useState('')
+  const [waitTime, setWaitTime] = useState(0)
+  const [isBlocked, setIsBlocked] = useState(false)
   const router = useRouter()
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (waitTime > 0) {
+      setIsBlocked(true)
+      const timer = setInterval(() => {
+        setWaitTime(prev => {
+          if (prev <= 1) {
+            setIsBlocked(false)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(timer)
+    }
+  }, [waitTime])
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,6 +55,9 @@ export default function LoginPage() {
         }
       } else {
         setError(response.message || 'Invalid password')
+        if (response.waitTime) {
+          setWaitTime(response.waitTime)
+        }
       }
     } catch (error) {
       setError('Network error. Please try again.')
@@ -49,6 +71,8 @@ export default function LoginPage() {
     setEmail('')
     setPassword('')
     setError('')
+    setWaitTime(0)
+    setIsBlocked(false)
   }
 
   return (
@@ -164,14 +188,24 @@ export default function LoginPage() {
                 </div>
 
                 {error && (
-                  <div className="bg-red-100 border-2 border-red-800 text-red-800 px-3 py-2 font-mono text-sm">
+                  <div className={`border-2 px-3 py-2 font-mono text-sm ${
+                    isBlocked 
+                      ? 'bg-yellow-100 border-yellow-800 text-yellow-800' 
+                      : 'bg-red-100 border-red-800 text-red-800'
+                  }`}>
                     {error}
+                    {isBlocked && waitTime > 0 && (
+                      <div className="mt-2 text-center">
+                        <div className="text-lg font-bold">{waitTime}s</div>
+                        <div className="text-xs">TUNGGU SEBELUM MENCOBA LAGI</div>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 <Button
                   type="submit"
-                  disabled={loading || !isValidEmail || !password}
+                  disabled={loading || !isValidEmail || !password || isBlocked}
                   className="w-full py-3 font-bold bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white border-2 border-gray-800"
                   style={{fontFamily: 'Courier New, monospace', letterSpacing: '2px', textTransform: 'uppercase'}}
                 >
@@ -184,7 +218,7 @@ export default function LoginPage() {
                         <span className="animate-pulse" style={{animationDelay: '0.4s'}}>█</span>
                       </div>
                     </div>
-                  ) : 'SIGN IN'}
+                  ) : isBlocked ? `TUNGGU ${waitTime}S` : 'SIGN IN'}
                 </Button>
 
                 <div className="text-center pt-2">

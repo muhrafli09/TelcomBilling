@@ -98,4 +98,24 @@ class AuthController extends Controller
             'message' => 'Logged out successfully'
         ])->withHeaders($this->corsHeaders());
     }
+
+    public function dashboard(Request $request)
+    {
+        $user = $request->user();
+        
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'account_codes' => $user->accountCodes->pluck('account_code')->toArray()
+            ],
+            'stats' => [
+                'total_calls' => 0,
+                'total_cost' => 0,
+                'active_calls' => 0
+            ]
+        ])->withHeaders($this->corsHeaders());
+    }
 }

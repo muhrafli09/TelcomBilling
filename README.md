@@ -2,105 +2,117 @@
 
 Customer portal untuk monitoring billing dan active calls berdasarkan AccountCode dari CDR Asterisk.
 
+## Tech Stack (LTS)
+
+### Backend
+- **Laravel 10 LTS** (Support until 2026)
+- **PHP 8.1+** (LTS support)
+- **MySQL 8.0** (LTS support)
+- **Laravel Sanctum** (API Authentication)
+
+### Frontend
+- **Next.js 16** (Latest stable)
+- **React 19** (Latest)
+- **TypeScript 5.9** (Latest)
+- **Tailwind CSS** + **Radix UI**
+
 ## Struktur Aplikasi
 
 ```
 /var/www/telecom-billing/
-├── backend/           # Laravel API
-├── frontend/          # Next.js Customer Portal
+├── backend/           # Laravel 10 LTS API
+├── frontend/          # Next.js 16 Customer Portal
 ├── nginx/            # Nginx configuration
-└── setup.sh          # Installation script
+└── cdr/              # CDR files storage
 ```
 
-## Fitur
+## Installation
+
+### Development Setup
+```bash
+# Backend
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve --host=0.0.0.0 --port=8000
+
+# Frontend
+cd frontend
+npm install
+npm run dev
+```
+
+### Production Setup
+```bash
+# Run production setup (requires root)
+sudo ./setup.sh
+
+# Add domain to /etc/hosts
+echo "127.0.0.1 telecom-billing.local" >> /etc/hosts
+```
+
+## Features
 
 ### Customer Portal
-- Login dengan AccountCode dan password
+- Login dengan email dan password
 - Dashboard dengan ringkasan billing
 - Monitoring active calls real-time
 - History panggilan dengan biaya
-- Responsive design
+- Responsive pixel art design
 
 ### Backend API
 - Authentication dengan Laravel Sanctum
 - Integrasi dengan CDR files
 - Real-time data dari Asterisk CLI
 - RESTful API endpoints
-
-## Installation
-
-### Development Setup (Recommended)
-1. Jalankan development setup:
-```bash
-./dev-setup.sh
-```
-
-2. Start development servers:
-```bash
-./start-dev.sh
-```
-
-### Production Setup
-1. Jalankan production setup (requires root):
-```bash
-sudo ./setup.sh
-```
-
-2. Tambahkan domain ke /etc/hosts:
-```bash
-echo "127.0.0.1 telecom-billing.local" >> /etc/hosts
-```
-
-## Test Accounts
-
-| Account Code | Password | Rate (IDR/sec) |
-|-------------|----------|----------------|
-| GLO-2510-001 | pass001 | 7.5 |
-| GLO-2510-002 | pass002 | 5.0 |
-| GLO-2510-003 | pass003 | 6.0 |
+- Role-based access (admin/customer)
 
 ## API Endpoints
 
-### Customer API
-- `POST /api/customer/login` - Login
+### Authentication
+- `POST /api/login` - User login
+- `POST /api/logout` - User logout
+
+### Customer Portal
 - `GET /api/customer/dashboard` - Dashboard data
-- `GET /api/customer/billing?days=30` - Billing history
+- `GET /api/customer/billing` - Billing history
 - `GET /api/customer/active-calls` - Active calls
-
-## Services
-
-### Backend (Laravel)
-```bash
-cd /var/www/telecom-billing/backend
-php artisan serve --host=0.0.0.0 --port=8000
-```
-
-### Frontend (Next.js)
-```bash
-cd /var/www/telecom-billing/frontend
-npm run dev # Development
-npm run build && npm start # Production
-```
-
-## Configuration
-
-### Environment Variables
-- Backend: `/var/www/telecom-billing/backend/.env`
-- Frontend: `/var/www/telecom-billing/frontend/.env.local`
-
-### CDR Integration
-- CDR Path: `/root/cdr/YYYY/MM/CDR_YYYY-MM-DD.csv`
-- Format: 27 fields dengan AccountCode di posisi pertama
-- Real-time: Asterisk CLI commands
 
 ## Access URLs
 
 ### Development
-- Customer Portal: http://localhost:3000/customer/login
+- Customer Portal: http://localhost:3000/login
 - API: http://localhost:8000/api
 - Backend: http://localhost:8000
 
 ### Production
-- Customer Portal: http://telecom-billing.local/customer/login
+- Customer Portal: http://telecom-billing.local/login
 - API Documentation: http://telecom-billing.local/api
-- Admin Portal: http://telecom-billing.local/admin (future)
+- Admin Portal: http://telecom-billing.local/admin
+
+## Admin Setup
+
+Create first admin user:
+```bash
+cd backend
+php artisan tinker
+User::create(['name' => 'Admin', 'email' => 'admin@company.com', 'password' => Hash::make('secure_password'), 'role' => 'admin']);
+```
+
+## Security Features
+
+- Laravel Sanctum authentication
+- CORS protection
+- Rate limiting
+- SQL injection protection
+- XSS protection
+- No dummy data in production
+
+## Support Timeline
+
+- **Laravel 10**: Until February 2026
+- **PHP 8.1**: Until November 2024
+- **Next.js 16**: Latest stable
+- **React 19**: Latest stable
