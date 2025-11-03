@@ -35,7 +35,7 @@ export const api = {
     // If we get "Email not found", email doesn't exist
     return {
       exists: result.message === 'Invalid password',
-      name: null
+      name: undefined
     }
   },
 
