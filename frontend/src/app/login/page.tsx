@@ -159,10 +159,12 @@ export default function LoginPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
+                  <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
                     EMAIL
                   </label>
                   <input
+                    id="email"
+                    name="email"
                     type="email"
                     required
                     placeholder="ENTER EMAIL"
@@ -178,10 +180,12 @@ export default function LoginPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
+                  <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
                     PASSWORD
                   </label>
                   <input
+                    id="password"
+                    name="password"
                     type="password"
                     required
                     placeholder="ENTER PASSWORD"

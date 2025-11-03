@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000'],
+    'allowed_origins' => [
+        'http://localhost:3000',
+        'https://sip.pbx.biz.id',
+        'http://localhost:8000'
+    ],
 
     'allowed_origins_patterns' => [],
 

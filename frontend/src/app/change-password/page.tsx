@@ -47,7 +47,7 @@ export default function ChangePasswordPage() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:8000/api/change-password', {
+      const response = await fetch('https://sip.pbx.biz.id/api/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,12 +102,15 @@ export default function ChangePasswordPage() {
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
+                <label htmlFor="currentPassword" className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
                   PASSWORD LAMA
                 </label>
                 <input
+                  id="currentPassword"
+                  name="currentPassword"
                   type="password"
                   required
+                  autoComplete="current-password"
                   placeholder="MASUKKAN PASSWORD LAMA"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
@@ -118,12 +121,15 @@ export default function ChangePasswordPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
+                <label htmlFor="newPassword" className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
                   PASSWORD BARU
                 </label>
                 <input
+                  id="newPassword"
+                  name="newPassword"
                   type="password"
                   required
+                  autoComplete="new-password"
                   placeholder="MASUKKAN PASSWORD BARU"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -133,12 +139,15 @@ export default function ChangePasswordPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
+                <label htmlFor="confirmPassword" className="block text-sm font-bold text-gray-700 mb-2" style={{fontFamily: 'Courier New, monospace', letterSpacing: '1px', textTransform: 'uppercase'}}>
                   KONFIRMASI PASSWORD
                 </label>
                 <input
+                  id="confirmPassword"
+                  name="confirmPassword"
                   type="password"
                   required
+                  autoComplete="new-password"
                   placeholder="ULANGI PASSWORD BARU"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
