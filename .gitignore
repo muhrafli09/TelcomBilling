@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Build outputs
+.next/
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Laravel specific
+bootstrap/cache/
+storage/app/
+storage/framework/
+storage/logs/
+
+# Database
+*.sqlite
+*.db
