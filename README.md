@@ -29,10 +29,21 @@ Customer portal untuk monitoring billing dan active calls berdasarkan AccountCod
 
 ## Installation
 
-1. Jalankan setup script:
+### Development Setup (Recommended)
+1. Jalankan development setup:
 ```bash
-cd /var/www/telecom-billing
-./setup.sh
+./dev-setup.sh
+```
+
+2. Start development servers:
+```bash
+./start-dev.sh
+```
+
+### Production Setup
+1. Jalankan production setup (requires root):
+```bash
+sudo ./setup.sh
 ```
 
 2. Tambahkan domain ke /etc/hosts:
@@ -84,6 +95,12 @@ npm run build && npm start # Production
 
 ## Access URLs
 
+### Development
+- Customer Portal: http://localhost:3000/customer/login
+- API: http://localhost:8000/api
+- Backend: http://localhost:8000
+
+### Production
 - Customer Portal: http://telecom-billing.local/customer/login
 - API Documentation: http://telecom-billing.local/api
 - Admin Portal: http://telecom-billing.local/admin (future)

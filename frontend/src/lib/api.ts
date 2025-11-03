@@ -1,30 +1,80 @@
-import axios from 'axios';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
 
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+interface CheckEmailResponse {
+  exists: boolean
+  name?: string
+}
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+interface LoginResponse {
+  success: boolean
+  token?: string
+  user?: {
+    id: number
+    name: string
+    email: string
+    role: string
+    account_codes: string[]
   }
-  return config;
-});
+  message?: string
+}
 
-export const customerApi = {
-  login: (accountCode: string, password: string) =>
-    api.post('/customer/login', { account_code: accountCode, password }),
-  
-  getDashboard: () => api.get('/customer/dashboard'),
-  
-  getBilling: (days?: number) => 
-    api.get('/customer/billing', { params: { days } }),
-  
-  getActiveCalls: () => api.get('/customer/active-calls'),
-};
+export const api = {
+  async checkEmail(email: string): Promise<CheckEmailResponse> {
+    // Use login endpoint with invalid password to check if email exists
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password: 'check_email_only' }),
+    })
+    
+    const result = await response.json()
+    
+    // If we get "Invalid password", email exists
+    // If we get "Email not found", email doesn't exist
+    return {
+      exists: result.message === 'Invalid password',
+      name: null
+    }
+  },
 
-export default api;
+  async login(email: string, password: string): Promise<LoginResponse> {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    })
+    
+    return response.json()
+  },
+
+  async logout(): Promise<void> {
+    const token = localStorage.getItem('token')
+    if (token) {
+      await fetch(`${API_BASE_URL}/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+  },
+
+  async getDashboard(): Promise<any> {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${API_BASE_URL}/customer/dashboard`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    return response.json()
+  }
+}
