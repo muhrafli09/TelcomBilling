@@ -77,7 +77,8 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
-                    'account_codes' => $user->accountCodes->pluck('account_code')->toArray()
+                    'account_codes' => $user->accountCodes->pluck('account_code')->toArray(),
+                    'must_change_password' => $user->must_change_password
                 ]
             ])->withHeaders($this->corsHeaders());
         }
@@ -109,13 +110,41 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
-                'account_codes' => $user->accountCodes->pluck('account_code')->toArray()
+                'account_codes' => $user->accountCodes->pluck('account_code')->toArray(),
+                'must_change_password' => $user->must_change_password
             ],
             'stats' => [
                 'total_calls' => 0,
                 'total_cost' => 0,
                 'active_calls' => 0
             ]
+        ])->withHeaders($this->corsHeaders());
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Password lama tidak benar'
+            ], 400)->withHeaders($this->corsHeaders());
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+            'must_change_password' => false
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diubah'
         ])->withHeaders($this->corsHeaders());
     }
 }

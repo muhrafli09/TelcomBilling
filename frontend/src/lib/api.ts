@@ -14,6 +14,7 @@ interface LoginResponse {
     email: string
     role: string
     account_codes: string[]
+    must_change_password: boolean
   }
   message?: string
   waitTime?: number

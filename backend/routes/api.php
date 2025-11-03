@@ -28,4 +28,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/customer/dashboard', [AuthController::class, 'dashboard']);
     Route::get('/customer/billing', [AuthController::class, 'billing']);
     Route::get('/customer/active-calls', [AuthController::class, 'activeCalls']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 });

@@ -47,11 +47,16 @@ export default function LoginPage() {
         localStorage.setItem('token', response.token)
         localStorage.setItem('user', JSON.stringify(response.user))
         
-        // Redirect based on user role
-        if (response.user.role === 'admin') {
-          router.push('/admin')
+        // Check if user must change password
+        if (response.user.must_change_password) {
+          router.push('/change-password')
         } else {
-          router.push('/dashboard')
+          // Redirect based on user role
+          if (response.user.role === 'admin') {
+            router.push('/admin')
+          } else {
+            router.push('/dashboard')
+          }
         }
       } else {
         setError(response.message || 'Invalid password')
