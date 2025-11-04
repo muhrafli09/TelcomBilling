@@ -273,62 +273,7 @@ export default function LoginPage() {
         </Card>
         </div>
       </div>
-      
-      {/* Pixel Nature Scene */}
-      <div className="absolute bottom-0 left-0 right-0 h-12 overflow-hidden" style={{fontFamily: 'Courier New, monospace'}}>
-        <div className="flex justify-between items-end h-full relative">
-          {Array.from({ length: 60 }, (_, i) => {
-            const isTree = i % 15 === 0;
-            const isRock = i % 13 === 0 && !isTree;
-            const isFlower = (i % 7 === 0 || i % 11 === 0) && !isTree && !isRock;
-            
-            const flowers = ['*', '+', 'o', '@', '%'];
-            const trees = ['▲', '♠', '♣'];
-            const rocks = ['■', '◆'];
-            
-            const flower = flowers[i % flowers.length];
-            const tree = trees[i % trees.length];
-            const rock = rocks[i % rocks.length];
-            
-            let element = '|';
-            let shouldAnimate = true;
-            let size = 'text-lg';
-            let color = '#16a34a';
-            
-            if (isTree) {
-              element = tree;
-              shouldAnimate = true;
-              size = 'text-2xl';
-              color = '#15803d';
-            } else if (isRock) {
-              element = rock;
-              shouldAnimate = false;
-              size = 'text-sm';
-              color = '#6b7280';
-            } else if (isFlower) {
-              element = flower;
-              shouldAnimate = true;
-              size = 'text-lg';
-              color = ['#ec4899', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4'][i % 5];
-            }
-            
-            return (
-              <span
-                key={i}
-                className={`${shouldAnimate ? 'animate-sway' : ''} ${size} leading-none font-bold`}
-                style={{
-                  animationDelay: shouldAnimate ? `${i * 0.05}s` : '0s',
-                  animationDuration: shouldAnimate ? `${0.8 + (i % 6) * 0.1}s` : '0s',
-                  color: color,
-                  zIndex: isTree ? 10 : isRock ? 5 : 1
-                }}
-              >
-                {element}
-              </span>
-            );
-          })}
-        </div>
-      </div>
+
     </div>
   )
 }
