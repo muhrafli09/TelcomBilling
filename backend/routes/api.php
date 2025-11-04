@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TenantController;
+use App\Http\Controllers\ExtensionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +25,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Authentication routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+// Admin routes
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/admin/reports', [AdminController::class, 'reports']);
+    
+    // Tenant management
+    Route::apiResource('tenants', TenantController::class);
+    
+    // Extension management
+    Route::apiResource('extensions', ExtensionController::class);
+});
 
 // Customer routes
 Route::middleware(['auth:sanctum'])->group(function () {
