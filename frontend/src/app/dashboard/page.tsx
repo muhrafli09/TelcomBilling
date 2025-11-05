@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button'
 
 interface CallRecord {
   id: number
-  extension: string
-  destination: string
+  src: string
+  dst: string
   duration: number
   cost: number
-  timestamp: string
+  calldate: string
+  disposition: string
+  tenant: string
 }
 
 export default function DashboardPage() {
@@ -34,42 +36,29 @@ export default function DashboardPage() {
     const parsedUser = JSON.parse(userData)
     setUser(parsedUser)
     
-    // Mock data untuk customer dashboard
-    setStats({
-      total_calls: Math.floor(Math.random() * 100) + 50,
-      total_cost: Math.floor(Math.random() * 50000) + 10000,
-      active_calls: Math.floor(Math.random() * 5)
-    })
-    
-    // Mock call history
-    const mockCalls: CallRecord[] = [
-      {
-        id: 1,
-        extension: '1001',
-        destination: '+628123456789',
-        duration: 180,
-        cost: 2500,
-        timestamp: '2025-11-04 14:30:00'
-      },
-      {
-        id: 2,
-        extension: '1001',
-        destination: '+628987654321',
-        duration: 95,
-        cost: 1200,
-        timestamp: '2025-11-04 13:15:00'
-      },
-      {
-        id: 3,
-        extension: '1002',
-        destination: '+628555666777',
-        duration: 320,
-        cost: 4800,
-        timestamp: '2025-11-04 12:45:00'
-      }
-    ]
-    setCallHistory(mockCalls)
+    // Fetch real data from API
+    fetchDashboardData()
   }, [router])
+
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('https://sip.pbx.biz.id/api/customer/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setStats(data.stats || { total_calls: 0, total_cost: 0, active_calls: 0 })
+        setCallHistory(data.recent_calls || [])
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -111,13 +100,21 @@ export default function DashboardPage() {
               </h1>
               <p className="text-sm font-mono text-gray-600">Welcome, {user.name}</p>
             </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="font-mono border-2 border-gray-800"
-            >
-              LOGOUT
-            </Button>
+            <div className="flex space-x-4">
+              <Button
+                onClick={() => router.push('/invoices')}
+                className="font-mono bg-purple-600 hover:bg-purple-700"
+              >
+                📄 MY INVOICES
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="font-mono border-2 border-gray-800"
+              >
+                🚪 LOGOUT
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -165,9 +162,10 @@ export default function DashboardPage() {
               <table className="w-full font-mono text-sm">
                 <thead>
                   <tr className="border-b-2 border-gray-800">
-                    <th className="text-left py-2">EXTENSION</th>
-                    <th className="text-left py-2">DESTINATION</th>
+                    <th className="text-left py-2">SRC</th>
+                    <th className="text-left py-2">DST</th>
                     <th className="text-left py-2">DURATION</th>
+                    <th className="text-left py-2">STATUS</th>
                     <th className="text-left py-2">COST</th>
                     <th className="text-left py-2">TIME</th>
                   </tr>
@@ -175,13 +173,20 @@ export default function DashboardPage() {
                 <tbody>
                   {callHistory.map((call) => (
                     <tr key={call.id} className="border-b border-gray-300">
-                      <td className="py-2 font-bold">{call.extension}</td>
-                      <td className="py-2">{call.destination}</td>
+                      <td className="py-2 font-bold">{call.src}</td>
+                      <td className="py-2">{call.dst}</td>
                       <td className="py-2">{formatDuration(call.duration)}</td>
+                      <td className="py-2">
+                        <span className={`px-2 py-1 text-xs rounded ${
+                          call.disposition === 'ANSWERED' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {call.disposition}
+                        </span>
+                      </td>
                       <td className="py-2 text-green-600 font-bold">
                         {formatCurrency(call.cost)}
                       </td>
-                      <td className="py-2">{call.timestamp}</td>
+                      <td className="py-2">{call.calldate}</td>
                     </tr>
                   ))}
                 </tbody>

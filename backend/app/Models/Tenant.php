@@ -10,6 +10,7 @@ class Tenant extends Model
     protected $fillable = [
         'name',
         'domain',
+        'accountcode',
         'context',
         'active',
         'settings'
@@ -23,5 +24,10 @@ class Tenant extends Model
     public function extensions(): HasMany
     {
         return $this->hasMany(Extension::class);
+    }
+
+    public function cdrs(): HasMany
+    {
+        return $this->hasMany(Cdr::class);
     }
 }

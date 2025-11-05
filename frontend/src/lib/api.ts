@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://sip.pbx.biz.id/api'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sip.pbx.biz.id/api'
 console.log('API_BASE_URL:', API_BASE_URL)
 
 interface CheckEmailResponse {

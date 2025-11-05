@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use App\Models\Extension;
 use App\Models\User;
+use App\Models\Cdr;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -12,21 +13,14 @@ class AdminController extends Controller
     public function dashboard()
     {
         $stats = [
-            'total_tenants' => Tenant::count(),
-            'active_tenants' => Tenant::where('active', true)->count(),
-            'total_extensions' => Extension::count(),
-            'active_extensions' => Extension::where('active', true)->count(),
+            'total_cdr' => Cdr::count(),
+            'answered_calls' => Cdr::where('disposition', 'ANSWERED')->count(),
+            'unique_accounts' => Cdr::distinct('accountcode')->count('accountcode'),
             'total_users' => User::count(),
         ];
 
-        $recent_tenants = Tenant::with('extensions')
-            ->latest()
-            ->take(5)
-            ->get();
-
         return response()->json([
-            'stats' => $stats,
-            'recent_tenants' => $recent_tenants
+            'stats' => $stats
         ]);
     }
 
